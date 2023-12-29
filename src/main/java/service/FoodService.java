@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import repository.FoodRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -31,5 +32,34 @@ public class FoodService {
                     "발생이유: 해당 이름의 식품을 찾을 수 없습니다.");
         }
         return findFood.get();
+    }
+
+    public List<Food> findFoods() {
+        return foodRepository.findAll();
+    }
+
+    /**
+     * 영양소별 식품 검색
+     * @param calories
+     * @return List<Food>
+     */
+    public List<Food> findFoodThatHasMoreCalories(int calories) {
+        return foodRepository.findThatHasMoreCarlories(calories);
+    }
+
+    public List<Food> findFoodThatHasLessCalories(int calories) {
+        return foodRepository.findThatHasLessCarlories(calories);
+    }
+
+    public List<Food> findFoodThatHasMoreProtein(int protein) {
+        return foodRepository.findThatHasMoreProtein(protein);
+    }
+
+    public List<Food> findFoodThatHasMoreFat(int fat) {
+        return foodRepository.findThatHasMoreFat(fat);
+    }
+
+    public List<Food> findFoodThatHasLessFat(int fat) {
+        return foodRepository.findThatHasLessFat(fat);
     }
 }

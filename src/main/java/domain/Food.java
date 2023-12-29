@@ -24,4 +24,9 @@ public class Food {
 
     @Embedded
     private Nutrition nutrition;
+
+    public Food(String name, Nutrition nutrition) {
+        this.name = name;
+        this.nutrition = nutrition;
+    }
 }
