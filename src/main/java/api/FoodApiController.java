@@ -18,21 +18,30 @@ public class FoodApiController {
     private final FoodService foodService;
 
     @PostMapping("https://apis.data.go.kr/1471000/FoodNtrIrdntInfoService1/getFoodNtrItdntList1?serviceKey=RRAZ7WfqxV7iXm8KE6cMuImCqAiHG%2Fn1fVI6E%2FbnzlmWxRNU1l%2FEsHQ8794sz47WFNlM1HMaQCv8%2FtWAH2gBqQ%3D%3D&pageNo=10&numOfRows=20&type=json")
-    public void saveFoodData(@RequestBody @Validated CreateFoodRequest request) {
-        String name = request.getDESC_KOR();
-        int calories = request.getNUTR_CONT1();
-        int carbohydrate = request.getNUTR_CONT2();
-        //마저 생성...
+    public void saveFoodData(@RequestBody @Validated CreateFoodRequest... requests) {
+        for (CreateFoodRequest request : requests) {
+            String name = request.getDESC_KOR();
+            int servingWt = request.getSERVING_WT();
+            int calories = request.getNUTR_CONT1();
+            int carbohydrate = request.getNUTR_CONT2();
+            int protein = request.getNUTR_CONT3();
+            int fat = request.getNUTR_CONT4();
+            int sugar = request.getNUTR_CONT5();
+            int natrium = request.getNUTR_CONT6();
+            int cholesterol = request.getNUTR_CONT7();
+            int saturatedFattyAcid = request.getNUTR_CONT8();
+            int transFattyAcid = request.getNUTR_CONT9();
 
-        Food food = new Food(name, new Nutrition());
-        food.
+            Food food = new Food(name, new Nutrition(servingWt, calories, carbohydrate, protein, fat, sugar, natrium, cholesterol, saturatedFattyAcid, transFattyAcid));
+            foodService.save(food);
+        }
     }
 
     @Data
     @AllArgsConstructor
     static class CreateFoodRequest {
         private String DESC_KOR; //식품이름
-        private String SERVING_WT; //1회제공량 (g)
+        private int SERVING_WT; //1회제공량 (g)
         private int NUTR_CONT1; //열량 (kcal)
         private int NUTR_CONT2; //탄수화물 (g)
         private int NUTR_CONT3; //단백질 (g)
