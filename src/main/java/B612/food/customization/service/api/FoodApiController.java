@@ -10,12 +10,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.aspectj.apache.bcel.classfile.Module;
 import org.hibernate.mapping.Map;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import B612.food.customization.service.service.FoodService;
 
-import java.io.UnsupportedEncodingException;
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -141,39 +144,37 @@ public class FoodApiController {
         return new CreateFoodResponse(id, name);
     }*/
 
-    @Value("${openApi.serviceKey}")
+    /* @Value 값들은 application.yml에 정의되어 있는 값을 가져옴 */
+    @Value("${openApi.baseUrl}")
+    private String baseUrl;
+
+    @Value("${openApi.ServiceKey}")
     private String serviceKey;
 
-    @Value("${openApi.callBackUrl}")
-    private String callBackUrl;
+    @Value("${openApi.type}")
+    private String type;
 
-    @Value("${openApi.dataType}")
-    private String dataType;
+    @GetMapping("/open-api/food")
+    public ResponseEntity<String> callFoodApi(
+            /*@RequestParam(value = "desc_kor") String name,
+            @RequestParam(value = "bgn_year") String bgnYear,
+            @RequestParam(value = "animal_plant") String animalPlant,
+            @RequestParam(value = "pageNo") String pageNo,
+            @RequestParam(value = "numOfRows") String numOfRows*/
+    ) {
 
-     @GetMapping("/forecast")
-    public ResponseEntity<String> callForecastApi(
-            @RequestParam(value="DESC_KOR") String name,
-            @RequestParam(value="SERVING_WT") int servingWeight,
-            @RequestParam(value="NUTR_CONT1") int calories,
-            @RequestParam(value="NUTR_CONT2") int carbonHydrate,
-            @RequestParam(value="NUTR_CONT3") int protein,
-            @RequestParam(value="NUTR_CONT4") int fat,
-            @RequestParam(value="NUTR_CONT5") int sugar,
-            @RequestParam(value="NUTR_CONT6") int natrium,
-            @RequestParam(value="NUTR_CONT7") int cholesterol,
-            @RequestParam(value="NUTR_CONT8") int saturatedFattyAcid,
-            @RequestParam(value="NUTR_CONT9") int transFattyAcid
-    ){
         HttpURLConnection urlConnection = null;
         InputStream stream = null;
         String result = null;
 
-        String urlStr = callBackUrl +
+        String urlStr = baseUrl +
                 "serviceKey=" + serviceKey +
-                "&dataType=" + dataType +
-                "&base_date=" + baseDate +
-                "&base_time=" + baseTime +
-                "&beach_num=" + beachNum;
+                /*"&desc_kor=" + name +
+                "&bgn_year=" + bgnYear +
+                "&animal_plant=" + animalPlant +
+                "&pageNo=" + pageNo +
+                "&numOfRows" + numOfRows +*/
+                "&type=" + type;
 
         try {
             URL url = new URL(urlStr);
@@ -183,7 +184,7 @@ public class FoodApiController {
             result = readStreamToString(stream);
 
             if (stream != null) stream.close();
-        } catch(IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         } finally {
             if (urlConnection != null) {
@@ -193,4 +194,35 @@ public class FoodApiController {
 
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
+
+    /* URLConnection 을 전달받아 연결정보 설정 후 연결, 연결 후 수신한 InputStream 반환 */
+    private InputStream getNetworkConnection(HttpURLConnection urlConnection) throws IOException {
+        urlConnection.setConnectTimeout(3000);
+        urlConnection.setReadTimeout(3000);
+        urlConnection.setRequestMethod("GET");
+        urlConnection.setDoInput(true);
+
+        if (urlConnection.getResponseCode() != HttpURLConnection.HTTP_OK) {
+            throw new IOException("HTTP error code : " + urlConnection.getResponseCode());
+        }
+
+        return urlConnection.getInputStream();
+    }
+
+    /* InputStream을 전달받아 문자열로 변환 후 반환 */
+    private String readStreamToString(InputStream stream) throws IOException {
+        StringBuilder result = new StringBuilder();
+
+        BufferedReader br = new BufferedReader(new InputStreamReader(stream, "UTF-8"));
+
+        String readLine;
+        while ((readLine = br.readLine()) != null) {
+            result.append(readLine + "\n\r");
+        }
+
+        br.close();
+
+        return result.toString();
+    }
 }
+
