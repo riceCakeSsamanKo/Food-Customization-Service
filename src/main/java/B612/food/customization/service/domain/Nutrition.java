@@ -1,4 +1,4 @@
-package domain;
+package B612.food.customization.service.domain;
 
 import jakarta.persistence.Embeddable;
 import lombok.AllArgsConstructor;

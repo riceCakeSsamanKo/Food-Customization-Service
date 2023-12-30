@@ -1,6 +1,6 @@
-package repository;
+package B612.food.customization.service.repository;
 
-import domain.Food;
+import B612.food.customization.service.domain.Food;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;

@@ -1,11 +1,11 @@
-package service;
+package B612.food.customization.service.service;
 
-import domain.Food;
-import exception.NoDataException;
+import B612.food.customization.service.domain.Food;
+import B612.food.customization.service.exception.NoDataException;
+import B612.food.customization.service.repository.FoodRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import repository.FoodRepository;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,8 +17,9 @@ public class FoodService {
     private final FoodRepository foodRepository;
 
     @Transactional(readOnly = false)
-    public void save(Food food) {
+    public Long save(Food food) {
         foodRepository.save(food);
+        return food.getId();
     }
 
     public Food findFood(Long foodId) {
