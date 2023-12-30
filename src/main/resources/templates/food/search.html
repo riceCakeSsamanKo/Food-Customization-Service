@@ -1,0 +1,52 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<!--<head>부를 fragments/header.html의 th:fragment=header로 대치-->
+<head th:replace="fragments/header :: header">  <!--jumbotron-narrow.css 사용-->
+    <title>Food</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+</head>
+<!--대치 끝-->
+<body>
+<div class="container">
+    <!--<div>를 fragments/bodyHeader.html의 th:fragment=bodyHeader로 대치-->
+    <div th:replace="fragments/bodyHeader :: bodyHeader"/>
+    <!--대치 끝-->
+    <div class="jumbotron">  <!--jumbotrom-narrow.css의 .jumbotron 클래스 사용-->
+        <h1>Food Search</h1>
+        <div class="form-group">
+            <input type="text" class="form-control" id="name" placeholder="검색어를 입력하세요">
+            <button type="button" class="btn btn-primary" id="btn-food-find">검색</button>
+        </div>
+        <div th:replace="fragments/footer :: footer"/>
+    </div> <!-- /container -->
+</div>
+</body>
+<script>
+    var main = {
+        init: function () {
+            var _this = this;
+            $('#btn-food-find').on('click', function () {
+                _this.find();
+            });
+        },
+        find: function () {
+            var name = $('#name').val();
+
+            $.ajax({
+                type: 'GET',
+                url: '/api/food/' + name,
+                dataType: 'json',
+                contentType: 'application/json; charset=utf-8',
+            }).done(function (res) {
+                alert(JSON.stringify(res));
+            }).fail(function (error) {
+                alert(JSON.stringify(error));
+            });
+        }
+    };
+
+    main.init();
+</script>
+</html>
+
+

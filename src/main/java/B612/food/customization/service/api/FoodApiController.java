@@ -6,11 +6,23 @@ import B612.food.customization.service.exception.NoDataException;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.aspectj.apache.bcel.classfile.Module;
+import org.hibernate.mapping.Map;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import B612.food.customization.service.service.FoodService;
 
+import java.io.UnsupportedEncodingException;
+import java.util.List;
+import java.util.stream.Collectors;
+
+
 @RestController
 @RequiredArgsConstructor
+@Slf4j
 public class FoodApiController {
     private final FoodService foodService;
 
@@ -41,7 +53,8 @@ public class FoodApiController {
     }
 
     /**
-     * 식품 조회 api
+     * 단일 식품 조회 api
+     *
      * @param name
      * @return 식품 정보
      * @throws NoDataException
@@ -52,6 +65,22 @@ public class FoodApiController {
         FoodDto foodDto = new FoodDto(food);
 
         return new Result(foodDto);  // wraping
+    }
+
+    /**
+     * 전체 식품 조회 api
+     *
+     * @return 식품 정보
+     * @throws NoDataException
+     */
+    @GetMapping("/api/food")
+    public Result getAllFoodData() throws NoDataException {
+        List<Food> foods = foodService.findFoods();
+        List<FoodDto> collect = foods.stream()
+                .map(f -> new FoodDto(f))
+                .collect(Collectors.toList());
+
+        return new Result(collect);  // wraping
     }
 
     @Data
@@ -92,9 +121,7 @@ public class FoodApiController {
         }
     }
 
-
-    /*
-    @PostMapping("/api/food/save")
+    /*@PostMapping("https://apis.data.go.kr/1471000/FoodNtrIrdntInfoService1/getFoodNtrItdntList1?serviceKey=RRAZ7WfqxV7iXm8KE6cMuImCqAiHG%2Fn1fVI6E%2FbnzlmWxRNU1l%2FEsHQ8794sz47WFNlM1HMaQCv8%2FtWAH2gBqQ%3D%3D&pageNo=10&numOfRows=20&type=json")
     public CreateFoodResponse saveFoodData(@RequestBody @Validated CreateFoodRequest request) {
         String name = request.getDESC_KOR();
         int servingWt = request.getSERVING_WT();
@@ -114,6 +141,56 @@ public class FoodApiController {
         return new CreateFoodResponse(id, name);
     }*/
 
+    @Value("${openApi.serviceKey}")
+    private String serviceKey;
 
+    @Value("${openApi.callBackUrl}")
+    private String callBackUrl;
 
+    @Value("${openApi.dataType}")
+    private String dataType;
+
+     @GetMapping("/forecast")
+    public ResponseEntity<String> callForecastApi(
+            @RequestParam(value="DESC_KOR") String name,
+            @RequestParam(value="SERVING_WT") int servingWeight,
+            @RequestParam(value="NUTR_CONT1") int calories,
+            @RequestParam(value="NUTR_CONT2") int carbonHydrate,
+            @RequestParam(value="NUTR_CONT3") int protein,
+            @RequestParam(value="NUTR_CONT4") int fat,
+            @RequestParam(value="NUTR_CONT5") int sugar,
+            @RequestParam(value="NUTR_CONT6") int natrium,
+            @RequestParam(value="NUTR_CONT7") int cholesterol,
+            @RequestParam(value="NUTR_CONT8") int saturatedFattyAcid,
+            @RequestParam(value="NUTR_CONT9") int transFattyAcid
+    ){
+        HttpURLConnection urlConnection = null;
+        InputStream stream = null;
+        String result = null;
+
+        String urlStr = callBackUrl +
+                "serviceKey=" + serviceKey +
+                "&dataType=" + dataType +
+                "&base_date=" + baseDate +
+                "&base_time=" + baseTime +
+                "&beach_num=" + beachNum;
+
+        try {
+            URL url = new URL(urlStr);
+
+            urlConnection = (HttpURLConnection) url.openConnection();
+            stream = getNetworkConnection(urlConnection);
+            result = readStreamToString(stream);
+
+            if (stream != null) stream.close();
+        } catch(IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (urlConnection != null) {
+                urlConnection.disconnect();
+            }
+        }
+
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
 }
