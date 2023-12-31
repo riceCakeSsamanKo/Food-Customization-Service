@@ -12,6 +12,9 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.util.LinkedMultiValueMap;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -30,17 +33,20 @@ class FoodApiControllerTest {
 
     @Test
     @DisplayName("Open Api 통신 테스트")
-    public void callOpenApi () throws Exception{
+    public void callOpenApi() throws Exception {
         //given
-        String name = "바나나칩";
+        String koreanParam1 = "바나나칩";
+        String encodedParam1 = URLEncoder.encode(koreanParam1, StandardCharsets.UTF_8);
+        String koreanParam2 = "(유)돌코리아";
+        String encodedParam2 = URLEncoder.encode(koreanParam2, StandardCharsets.UTF_8);
 
         //when
         LinkedMultiValueMap<String, String> param = new LinkedMultiValueMap<>();
-        /*param.add("desc_kor", name);
-        param.add("bgn_year","2017");
-        param.add("animal_plant","(유)돌코리아");
-        param.add("pageNo","10");
-        param.add("numOfRows","1");*/
+        param.add("desc_kor", encodedParam1);
+        param.add("bgn_year", "2017");
+        param.add("animal_plant", encodedParam2);
+        param.add("pageNo", "1");
+        param.add("numOfRows", "3");
 
         //then
         this.mvc.perform(get("/open-api/food").params(param))

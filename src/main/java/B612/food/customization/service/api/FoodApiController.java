@@ -156,11 +156,11 @@ public class FoodApiController {
 
     @GetMapping("/open-api/food")
     public ResponseEntity<String> callFoodApi(
-            /*@RequestParam(value = "desc_kor") String name,
+            @RequestParam(value = "desc_kor") String name,
             @RequestParam(value = "bgn_year") String bgnYear,
             @RequestParam(value = "animal_plant") String animalPlant,
             @RequestParam(value = "pageNo") String pageNo,
-            @RequestParam(value = "numOfRows") String numOfRows*/
+            @RequestParam(value = "numOfRows") String numOfRows
     ) {
 
         HttpURLConnection urlConnection = null;
@@ -169,11 +169,11 @@ public class FoodApiController {
 
         String urlStr = baseUrl +
                 "serviceKey=" + serviceKey +
-                /*"&desc_kor=" + name +
+                "&desc_kor=" + name +
                 "&bgn_year=" + bgnYear +
                 "&animal_plant=" + animalPlant +
                 "&pageNo=" + pageNo +
-                "&numOfRows" + numOfRows +*/
+                "&numOfRows=" + numOfRows +
                 "&type=" + type;
 
         try {
