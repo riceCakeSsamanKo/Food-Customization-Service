@@ -1,6 +1,13 @@
 # food-customization-service
  B612 어린왕자 Team1. 식단 추천 서비스 개발
 
+# 기술 스택
+- Gradle - Groovy
+- Java 17
+- Springboot 3.2.1
+- h2 database
+- Junit5
+- 
 # 사용 데이터
 ## -식품의약품안전처_식품 영양성분 정보
 https://www.data.go.kr/data/15057436/openapi.do#/tab_layer_detail_function
