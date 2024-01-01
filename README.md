@@ -7,7 +7,7 @@
 - Springboot 3.2.1
 - h2 database
 - Junit5
-- 
+  
 # 사용 데이터
 ## -식품의약품안전처_식품 영양성분 정보
 https://www.data.go.kr/data/15057436/openapi.do#/tab_layer_detail_function
