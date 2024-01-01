@@ -18,8 +18,11 @@ logging.level:
   org.hibernate.SQL: debug
 #  org.hibernate.type: trace
 
+  deserialization:
+    fail-on-unknown-properties: false # @JsonIgnoreProperties 프로젝트 전체 적용
+
 # api 조회시 필요한 정보들(외부에 노출되서는 안되거나 변하지 않는값들)
 openApi:
   baseUrl: http://apis.data.go.kr/1471000/FoodNtrIrdntInfoService1/getFoodNtrItdntList1?
-  ServiceKey: RRAZ7WfqxV7iXm8KE6cMuImCqAiHG/n1fVI6E/bnzlmWxRNU1l/EsHQ8794sz47WFNlM1HMaQCv8/tWAH2gBqQ==
+  ServiceKey: RRAZ7WfqxV7iXm8KE6cMuImCqAiHG%2Fn1fVI6E%2FbnzlmWxRNU1l%2FEsHQ8794sz47WFNlM1HMaQCv8%2FtWAH2gBqQ%3D%3D
   type: json

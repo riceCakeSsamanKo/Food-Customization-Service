@@ -2,6 +2,8 @@ package B612.food.customization.service.api;
 
 import B612.food.customization.service.domain.Food;
 import B612.food.customization.service.domain.Nutrition;
+import B612.food.customization.service.dto.FoodItem;
+import B612.food.customization.service.dto.FoodItems;
 import B612.food.customization.service.exception.NoDataException;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,6 +21,8 @@ import B612.food.customization.service.service.FoodService;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -167,15 +171,20 @@ public class FoodApiController {
         InputStream stream = null;
         String result = null;
 
+
+        // 한글을 utf-8로 인코딩
+        String encodedName = URLEncoder.encode(name, StandardCharsets.UTF_8);
+        String encodedAnimalPlant = URLEncoder.encode(animalPlant, StandardCharsets.UTF_8);
+
         String urlStr = baseUrl +
                 "serviceKey=" + serviceKey +
-                "&desc_kor=" + name +
+                "&desc_kor=" + encodedName +
                 "&bgn_year=" + bgnYear +
-                "&animal_plant=" + animalPlant +
+                "&animal_plant=" + encodedAnimalPlant +
                 "&pageNo=" + pageNo +
                 "&numOfRows=" + numOfRows +
                 "&type=" + type;
-
+        System.out.println("urlStr = " + urlStr);
         try {
             URL url = new URL(urlStr);
 
@@ -193,6 +202,52 @@ public class FoodApiController {
         }
 
         return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    // json을 파싱하여 FoodItems 객체를 반환함
+    @GetMapping("/open-api/food2")
+    public FoodItems callFoodApiAndParse(
+            @RequestParam(value = "desc_kor") String name,
+            @RequestParam(value = "bgn_year") String bgnYear,
+            @RequestParam(value = "animal_plant") String animalPlant,
+            @RequestParam(value = "pageNo") String pageNo,
+            @RequestParam(value = "numOfRows") String numOfRows
+    ) {
+
+        HttpURLConnection urlConnection = null;
+        InputStream stream = null;
+        String result = null;
+
+
+        // 한글을 utf-8로 인코딩
+        String encodedName = URLEncoder.encode(name, StandardCharsets.UTF_8);
+        String encodedAnimalPlant = URLEncoder.encode(animalPlant, StandardCharsets.UTF_8);
+
+        String urlStr = baseUrl +
+                "serviceKey=" + serviceKey +
+                "&desc_kor=" + encodedName +
+                "&bgn_year=" + bgnYear +
+                "&animal_plant=" + encodedAnimalPlant +
+                "&pageNo=" + pageNo +
+                "&numOfRows=" + numOfRows +
+                "&type=" + type;
+        System.out.println("urlStr = " + urlStr);
+        try {
+            URL url = new URL(urlStr);
+
+            urlConnection = (HttpURLConnection) url.openConnection();
+            stream = getNetworkConnection(urlConnection);
+            result = readStreamToString(stream);
+
+            if (stream != null) stream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (urlConnection != null) {
+                urlConnection.disconnect();
+            }
+        }
+        return foodService.parsingJsonObject(result);
     }
 
     /* URLConnection 을 전달받아 연결정보 설정 후 연결, 연결 후 수신한 InputStream 반환 */
