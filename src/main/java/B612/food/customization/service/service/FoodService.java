@@ -4,11 +4,13 @@ import B612.food.customization.service.domain.Food;
 import B612.food.customization.service.dto.FoodItems;
 import B612.food.customization.service.exception.NoDataException;
 import B612.food.customization.service.repository.FoodRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -41,6 +43,9 @@ public class FoodService {
         return foodRepository.findAll();
     }
 
+    public List<Food> findFoodsByName(String name) {
+        return foodRepository.findListByName(name);
+    }
     /**
      * 영양소별 식품 검색
      *
@@ -79,15 +84,6 @@ public class FoodService {
         return foodRepository.findThatHasLessFat(fat);
     }
 
-    public FoodItems parsingJsonObject(String json) {
-        FoodItems items = null;
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            items = mapper.readValue(json, FoodItems.class);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
 
-        return items;
-    }
+
 }

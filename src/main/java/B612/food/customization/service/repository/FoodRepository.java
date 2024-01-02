@@ -77,4 +77,10 @@ public class FoodRepository {
                 .getResultList();
     }
 
+    public List<Food> findListByName(String name) {
+        return em.createQuery("select f from Food f " +
+                        "where f.name =: name", Food.class)
+                .setParameter("name", name)
+                .getResultList();
+    }
 }

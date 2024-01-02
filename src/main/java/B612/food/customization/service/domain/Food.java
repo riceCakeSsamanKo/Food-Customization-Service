@@ -7,12 +7,14 @@ import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import static lombok.AccessLevel.*;
 
 @Entity
 @Getter
 @AllArgsConstructor
+@ToString
 @NoArgsConstructor(access = PROTECTED)
 public class Food {
     @Id

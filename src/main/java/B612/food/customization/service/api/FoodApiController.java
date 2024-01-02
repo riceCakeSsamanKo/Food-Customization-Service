@@ -5,6 +5,8 @@ import B612.food.customization.service.domain.Nutrition;
 import B612.food.customization.service.dto.FoodItem;
 import B612.food.customization.service.dto.FoodItems;
 import B612.food.customization.service.exception.NoDataException;
+import B612.food.customization.service.service.FoodApiService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +34,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class FoodApiController {
     private final FoodService foodService;
+    private final FoodApiService foodApiService;
 
     @Data
     static class CreateFoodRequest {
@@ -100,16 +103,16 @@ public class FoodApiController {
     @AllArgsConstructor
     static class FoodDto {
         private String name;
-        private int servingWeight;
-        private int calories;
-        private int carbohydrate;
-        private int protein;
-        private int fat;
-        private int sugar;
-        private int natrium;
-        private int cholesterol;
-        private int saturatedFattyAcid;
-        private int transFattyAcid;
+        private float servingWeight;
+        private float calories;
+        private float carbohydrate;
+        private float protein;
+        private float fat;
+        private float sugar;
+        private float natrium;
+        private float cholesterol;
+        private float saturatedFattyAcid;
+        private float transFattyAcid;
 
         public FoodDto(Food food) {
             Nutrition nutrition = food.getNutrition();
@@ -117,7 +120,7 @@ public class FoodApiController {
             name = food.getName();
             servingWeight = nutrition.getServingWeight();
             calories = nutrition.getCalories();
-            carbohydrate = nutrition.getCarbohydrate();
+            carbohydrate = nutrition.getCarbonHydrate();
             protein = nutrition.getProtein();
             fat = nutrition.getFat();
             sugar = nutrition.getSugar();
@@ -128,27 +131,6 @@ public class FoodApiController {
         }
     }
 
-    /*@PostMapping("https://apis.data.go.kr/1471000/FoodNtrIrdntInfoService1/getFoodNtrItdntList1?serviceKey=RRAZ7WfqxV7iXm8KE6cMuImCqAiHG%2Fn1fVI6E%2FbnzlmWxRNU1l%2FEsHQ8794sz47WFNlM1HMaQCv8%2FtWAH2gBqQ%3D%3D&pageNo=10&numOfRows=20&type=json")
-    public CreateFoodResponse saveFoodData(@RequestBody @Validated CreateFoodRequest request) {
-        String name = request.getDESC_KOR();
-        int servingWt = request.getSERVING_WT();
-        int calories = request.getNUTR_CONT1();
-        int carbohydrate = request.getNUTR_CONT2();
-        int protein = request.getNUTR_CONT3();
-        int fat = request.getNUTR_CONT4();
-        int sugar = request.getNUTR_CONT5();
-        int natrium = request.getNUTR_CONT6();
-        int cholesterol = request.getNUTR_CONT7();
-        int saturatedFattyAcid = request.getNUTR_CONT8();
-        int transFattyAcid = request.getNUTR_CONT9();
-
-        Food food = new Food(name, new Nutrition(servingWt, calories, carbohydrate, protein, fat, sugar, natrium, cholesterol, saturatedFattyAcid, transFattyAcid));
-        Long id = foodService.save(food);
-
-        return new CreateFoodResponse(id, name);
-    }*/
-
-    /* @Value 값들은 application.yml에 정의되어 있는 값을 가져옴 */
     @Value("${openApi.baseUrl}")
     private String baseUrl;
 
@@ -174,17 +156,32 @@ public class FoodApiController {
 
         // 한글을 utf-8로 인코딩
         String encodedName = URLEncoder.encode(name, StandardCharsets.UTF_8);
+        String encodedBgnYear = URLEncoder.encode(bgnYear, StandardCharsets.UTF_8);
         String encodedAnimalPlant = URLEncoder.encode(animalPlant, StandardCharsets.UTF_8);
+        String encodedPageNo = URLEncoder.encode(pageNo, StandardCharsets.UTF_8);
+        String encodedNumOfRows = URLEncoder.encode(numOfRows, StandardCharsets.UTF_8);
 
         String urlStr = baseUrl +
                 "serviceKey=" + serviceKey +
-                "&desc_kor=" + encodedName +
-                "&bgn_year=" + bgnYear +
-                "&animal_plant=" + encodedAnimalPlant +
-                "&pageNo=" + pageNo +
-                "&numOfRows=" + numOfRows +
                 "&type=" + type;
+
+        if (name != "") {
+            urlStr += "&desc_kor=" + encodedName;
+        }
+        if (bgnYear != "") {
+            urlStr += "&bgn_year=" + encodedBgnYear;
+        }
+        if (animalPlant != "") {
+            urlStr += "&animal_plant=" + encodedAnimalPlant;
+        }
+        if (pageNo != "") {
+            urlStr += "&pageNo=" + encodedPageNo;
+        }
+        if (numOfRows != "") {
+            urlStr += "&numOfRows=" + encodedNumOfRows;
+        }
         System.out.println("urlStr = " + urlStr);
+
         try {
             URL url = new URL(urlStr);
 
@@ -202,52 +199,6 @@ public class FoodApiController {
         }
 
         return new ResponseEntity<>(result, HttpStatus.OK);
-    }
-
-    // json을 파싱하여 FoodItems 객체를 반환함
-    @GetMapping("/open-api/food2")
-    public FoodItems callFoodApiAndParse(
-            @RequestParam(value = "desc_kor") String name,
-            @RequestParam(value = "bgn_year") String bgnYear,
-            @RequestParam(value = "animal_plant") String animalPlant,
-            @RequestParam(value = "pageNo") String pageNo,
-            @RequestParam(value = "numOfRows") String numOfRows
-    ) {
-
-        HttpURLConnection urlConnection = null;
-        InputStream stream = null;
-        String result = null;
-
-
-        // 한글을 utf-8로 인코딩
-        String encodedName = URLEncoder.encode(name, StandardCharsets.UTF_8);
-        String encodedAnimalPlant = URLEncoder.encode(animalPlant, StandardCharsets.UTF_8);
-
-        String urlStr = baseUrl +
-                "serviceKey=" + serviceKey +
-                "&desc_kor=" + encodedName +
-                "&bgn_year=" + bgnYear +
-                "&animal_plant=" + encodedAnimalPlant +
-                "&pageNo=" + pageNo +
-                "&numOfRows=" + numOfRows +
-                "&type=" + type;
-        System.out.println("urlStr = " + urlStr);
-        try {
-            URL url = new URL(urlStr);
-
-            urlConnection = (HttpURLConnection) url.openConnection();
-            stream = getNetworkConnection(urlConnection);
-            result = readStreamToString(stream);
-
-            if (stream != null) stream.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if (urlConnection != null) {
-                urlConnection.disconnect();
-            }
-        }
-        return foodService.parsingJsonObject(result);
     }
 
     /* URLConnection 을 전달받아 연결정보 설정 후 연결, 연결 후 수신한 InputStream 반환 */
