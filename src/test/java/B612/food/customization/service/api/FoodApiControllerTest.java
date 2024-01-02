@@ -28,7 +28,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest // ÀüÃ¼ ¾ÖÇÃ¸®ÄÉÀÌ¼Ç ÄÁÅØ½ºÆ® ·Îµå
+@SpringBootTest // ì „ì²´ ì• í”Œë¦¬ì¼€ì´ì…˜ ì»¨í…ìŠ¤íŠ¸ ë¡œë“œ
 @AutoConfigureMockMvc
 @Transactional
 class FoodApiControllerTest {
@@ -36,22 +36,22 @@ class FoodApiControllerTest {
     @Autowired
     private MockMvc mvc;
 
-    @Autowired // FoodService¸¦ ¸ñ °´Ã¼·Î ÁÖÀÔ
+    @Autowired // FoodServiceë¥¼ ëª© ê°ì²´ë¡œ ì£¼ì…
     private FoodService foodService;
 
     @Autowired
     private FoodApiService foodApiService;
 
     @Test
-    @DisplayName("Open Api Åë½Å Å×½ºÆ®")
+    @DisplayName("Open Api í†µì‹  í…ŒìŠ¤íŠ¸")
     public void callOpenApi() throws Exception {
         //given
 
         //when
         LinkedMultiValueMap<String, String> param = new LinkedMultiValueMap<>();
-        param.add("desc_kor", "¹Ù³ª³ªÄ¨");
+        param.add("desc_kor", "ë°”ë‚˜ë‚˜ì¹©");
         param.add("bgn_year", "2017");
-        param.add("animal_plant", "(À¯)µ¹ÄÚ¸®¾Æ");
+        param.add("animal_plant", "(ìœ )ëŒì½”ë¦¬ì•„");
         param.add("pageNo", "1");
         param.add("numOfRows", "3");
 
@@ -62,17 +62,17 @@ class FoodApiControllerTest {
     }
 
     @Test
-    @DisplayName("Open Api json DTO ¹ÙÀÎµù Å×½ºÆ®")
+    @DisplayName("Open Api json DTO ë°”ì¸ë”© í…ŒìŠ¤íŠ¸")
     public void testJsonParsingToDto() throws Exception {
         //when
         LinkedMultiValueMap<String, String> param = new LinkedMultiValueMap<>();
-        param.add("desc_kor", "¹Ù³ª³ªÄ¨");
+        param.add("desc_kor", "ë°”ë‚˜ë‚˜ì¹©");
         param.add("bgn_year", "2017");
-        param.add("animal_plant", "(À¯)µ¹ÄÚ¸®¾Æ");
+        param.add("animal_plant", "(ìœ )ëŒì½”ë¦¬ì•„");
         param.add("pageNo", "1");
         param.add("numOfRows", "3");
 
-        // JSONÀ» DTO·Î ÆÄ½Ì
+        // JSONì„ DTOë¡œ íŒŒì‹±
         String contentAsString = this.mvc.perform(get("/open-api/food").params(param))
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
@@ -87,11 +87,11 @@ class FoodApiControllerTest {
     }
 
     @Test
-    @DisplayName("Open API json µ¥ÀÌÅÍ¸¦ DB¿¡ ÀúÀåÇÏ±â")
+    @DisplayName("Open API json ë°ì´í„°ë¥¼ DBì— ì €ì¥í•˜ê¸°")
     public void saveJsonToDB() throws Exception {
         //given
         LinkedMultiValueMap<String, String> param =
-                foodApiService.makeParam("¹Ù³ª³ªÄ¨", "", "", "", "3");
+                foodApiService.makeParam("ë°”ë‚˜ë‚˜ì¹©", "", "", "", "3");
 
         //when
         String contentAsString = this.mvc.perform(get("/open-api/food").params(param))
@@ -120,9 +120,9 @@ class FoodApiControllerTest {
             foodService.save(food);
         });
 
-        List<Food> findFood = foodService.findFoodsByName("¹Ù³ª³ªÄ¨");
+        List<Food> findFood = foodService.findFoodsByName("ë°”ë‚˜ë‚˜ì¹©");
         for (Food food : findFood) {
-            assertEquals(food.getName(), "¹Ù³ª³ªÄ¨");
+            assertEquals(food.getName(), "ë°”ë‚˜ë‚˜ì¹©");
             System.out.println("food= " + food);
         }
     }
