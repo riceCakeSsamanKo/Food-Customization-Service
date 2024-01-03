@@ -4,22 +4,17 @@ import B612.food.customization.service.domain.Food;
 import B612.food.customization.service.domain.Nutrition;
 import B612.food.customization.service.dto.FoodItem;
 import B612.food.customization.service.dto.FoodItems;
-import B612.food.customization.service.service.FoodApiService;
+import B612.food.customization.service.service.FoodItemApiService;
 import B612.food.customization.service.service.FoodService;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -40,7 +35,7 @@ class FoodApiControllerTest {
     private FoodService foodService;
 
     @Autowired
-    private FoodApiService foodApiService;
+    private FoodItemApiService foodItemApiService;
 
     @Test
     @DisplayName("Open Api 통신 테스트")
@@ -77,7 +72,7 @@ class FoodApiControllerTest {
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
 
-        FoodItems foodItems = foodApiService.parsingJsonObject(contentAsString);
+        FoodItems foodItems = foodItemApiService.parsingJsonObject(contentAsString);
 
 
         for (FoodItem foodItem : foodItems.getFoodItems()) {
@@ -91,7 +86,7 @@ class FoodApiControllerTest {
     public void saveJsonToDB() throws Exception {
         //given
         LinkedMultiValueMap<String, String> param =
-                foodApiService.makeParam("바나나칩", "", "", "", "3");
+                foodItemApiService.makeParam("", "", "", "", "5");
 
         //when
         String contentAsString = this.mvc.perform(get("/open-api/food").params(param))
@@ -99,7 +94,7 @@ class FoodApiControllerTest {
                 .andReturn().getResponse().getContentAsString();
 
         System.out.println("contentAsString = " + contentAsString);
-        FoodItems foodItems = foodApiService.parsingJsonObject(contentAsString);
+        FoodItems foodItems = foodItemApiService.parsingJsonObject(contentAsString);
 
         foodItems.getFoodItems().forEach(item -> {
             String name = item.getName();
@@ -120,9 +115,9 @@ class FoodApiControllerTest {
             foodService.save(food);
         });
 
-        List<Food> findFood = foodService.findFoodsByName("바나나칩");
+        List<Food> findFood = foodService.findFoodsByName("고량미,알곡");
         for (Food food : findFood) {
-            assertEquals(food.getName(), "바나나칩");
+            assertEquals(food.getName(), "고량미,알곡");
             System.out.println("food= " + food);
         }
     }

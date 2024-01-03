@@ -2,21 +2,14 @@ package B612.food.customization.service.api;
 
 import B612.food.customization.service.domain.Food;
 import B612.food.customization.service.domain.Nutrition;
-import B612.food.customization.service.dto.FoodItem;
-import B612.food.customization.service.dto.FoodItems;
 import B612.food.customization.service.exception.NoDataException;
-import B612.food.customization.service.service.FoodApiService;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.aspectj.apache.bcel.classfile.Module;
-import org.hibernate.mapping.Map;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import B612.food.customization.service.service.FoodService;
 
@@ -34,7 +27,6 @@ import java.util.stream.Collectors;
 @Slf4j
 public class FoodApiController {
     private final FoodService foodService;
-    private final FoodApiService foodApiService;
 
     @Data
     static class CreateFoodRequest {
