@@ -17,8 +17,8 @@ public class InitDB {
 
     @PostConstruct
     public void init() {
-        initService.initFood();
-        initService.initFoodFormApi();
+        //initService.initFood();
+        //initService.initFoodFormApi();
     }
 
     @Component
