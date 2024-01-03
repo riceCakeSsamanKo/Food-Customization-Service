@@ -2,16 +2,19 @@ package B612.food.customization.service;
 
 import B612.food.customization.service.domain.Food;
 import B612.food.customization.service.domain.Nutrition;
+import B612.food.customization.service.dto.FoodItem;
 import B612.food.customization.service.dto.FoodItems;
 import B612.food.customization.service.service.FoodItemApiService;
 import B612.food.customization.service.service.FoodService;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class InitDB {
     private final InitService initService;
 
@@ -29,6 +32,8 @@ public class InitDB {
         private final FoodItemApiService foodItemApiService;
 
         public void initFood() {
+            log.info("initFood()");
+
             Nutrition nutrition1 = new Nutrition(1f, 2f, 3f, 4f, 5f, null, 6f, 7f, null, 8f);
             Nutrition nutrition2 = new Nutrition("3.1", "2.3", "4.4", "N/A", "2.1", "9.5", "0.0", "N/A", "N/A", "4.4");
             Nutrition nutrition3 = new Nutrition("0", "0.00", "0.00", "0.00", "0.00", "N/A", "0.00", "N/A", "N/A", "N/A");
@@ -43,6 +48,8 @@ public class InitDB {
         }
 
         public void initFoodFormApi() {
+            log.info("initFoodFormApi()");
+
             FoodItems foodItems = foodItemApiService.fetchFoodItemsFromExternalAPI("", "", "", "", "5");
 
             foodItems.getFoodItems().forEach(item -> {
