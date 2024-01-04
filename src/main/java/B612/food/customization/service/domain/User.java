@@ -1,9 +1,6 @@
 package B612.food.customization.service.domain;
 
-import jakarta.persistence.Embedded;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -13,6 +10,7 @@ import static lombok.AccessLevel.PROTECTED;
 
 @Entity
 @Getter
+@Table(name = "USERS")
 @NoArgsConstructor(access = PROTECTED)
 public class User {
     @Id
@@ -28,16 +26,24 @@ public class User {
     @Embedded
     private Address address;
 
+    @Enumerated
+    private Sex sex;
+
+    @OneToOne
+    @JoinColumn()
+    private PhysicalInformation physicalInfo;
 
 
-    public User(String name, LogIn login, Address address) {
+    public User(String name, Sex sex, LogIn login, Address address) {
         this.name = name;
+        this.sex = sex;
         this.logIn = login;
         this.address = address;
     }
 
-    public User(String name, LogIn login, Address address, String email) {
+    public User(String name, Sex sex, LogIn login, Address address, String email) {
         this.name = name;
+        this.sex = sex;
         this.logIn = login;
         this.address = address;
         this.email = email;

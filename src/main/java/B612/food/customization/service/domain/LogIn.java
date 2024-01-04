@@ -13,6 +13,6 @@ import static lombok.AccessLevel.*;
 @AllArgsConstructor
 @NoArgsConstructor(access = PROTECTED)
 public class LogIn {
-    private String id;
+    private String login_id;
     private String password;
 }
