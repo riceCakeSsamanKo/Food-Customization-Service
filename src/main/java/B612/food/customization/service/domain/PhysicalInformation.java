@@ -1,17 +1,19 @@
 package B612.food.customization.service.domain;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import lombok.Getter;
-import lombok.Setter;
+import jakarta.persistence.*;
+import lombok.*;
+
+import static B612.food.customization.service.domain.Obesity.*;
+import static lombok.AccessLevel.*;
 
 @Entity
 @Getter
+@ToString
+@NoArgsConstructor(access = PROTECTED)
 public class PhysicalInformation {
     @Id
     @GeneratedValue
+    @Column(name = "physical_information_id")
     private Long id;
 
     private double height; // 단위(cm)
@@ -21,11 +23,7 @@ public class PhysicalInformation {
     @Setter
     private double skeletalMuscleMass; // 골격근량
     @Setter
-    private double bodyFat; // 체질량지수 (kg/m^2)
-
-    @Enumerated
-    private Obesity obesity;
-    // 비만도 계산 로직 구현 필요
+    private double bodyFat = 0; // 체지방량(%)
 
     public PhysicalInformation(double height, double bodyWeight) {
         this.height = height;
@@ -42,5 +40,4 @@ public class PhysicalInformation {
         this.height = height;
         this.bmi = 1.3 * bodyWeight / Math.pow((height / 100), 2.5);
     }
-
 }
