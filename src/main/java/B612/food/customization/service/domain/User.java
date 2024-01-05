@@ -26,6 +26,7 @@ public class User {
 
     private String name;
     private String email;
+    private String phoneNumber;
 
     @Embedded
     private LogIn logIn;
@@ -42,49 +43,52 @@ public class User {
 
     @Enumerated
     private Obesity obesity;
-    // 비만도 계산 로직 구현 필요
 
-    public User(String name, Sex sex, LogIn login, Address address) {
+    public User(String name, Sex sex, String phoneNumber, LogIn login, Address address) {
         this.name = name;
         this.sex = sex;
+        this.phoneNumber = phoneNumber;
         this.logIn = login;
         this.address = address;
     }
 
-    public User(String name, Sex sex, LogIn login, Address address, String email) {
+    public User(String name, Sex sex, String phoneNumber, LogIn login, Address address, String email) {
         this.name = name;
         this.sex = sex;
+        this.phoneNumber = phoneNumber;
         this.logIn = login;
         this.address = address;
         this.email = email;
     }
 
-    public User(String name, Sex sex, LogIn logIn, Address address, PhysicalInformation physicalInfo) {
+    public User(String name, Sex sex, String phoneNumber, LogIn logIn, Address address, PhysicalInformation physicalInfo) {
         this.name = name;
+        this.sex = sex;
+        this.phoneNumber = phoneNumber;
         this.logIn = logIn;
         this.address = address;
-        this.sex = sex;
         setPhysicalInfo(physicalInfo);
     }
 
-    public User(String name, Sex sex, LogIn logIn, Address address, String email, PhysicalInformation physicalInfo) {
+    public User(String name, Sex sex, String phoneNumber, LogIn logIn, Address address, String email, PhysicalInformation physicalInfo) {
         this.name = name;
-        this.email = email;
-        this.logIn = logIn;
-        this.address = address;
         this.sex = sex;
+        this.phoneNumber = phoneNumber;
+        this.logIn = logIn;
+        this.email = email;
+        this.address = address;
         setPhysicalInfo(physicalInfo);
     }
 
     public void setPhysicalInfo(PhysicalInformation physicalInfo) {
         this.physicalInfo = physicalInfo;
-        setObesityBySex(this.sex);
+        setObesityBySex();
     }
 
     /**
      * 비즈니스 로직
      */
-    private void setObesityBySex(Sex sex) throws IllegalStateException{
+    private void setObesityBySex() throws IllegalStateException{
         if (sex == MALE) {
             setObesity(10, 20);
         } else if (sex == FEMALE) {

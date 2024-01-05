@@ -18,16 +18,18 @@ public class PhysicalInformation {
 
     private double height; // 단위(cm)
     private double bodyWeight;
+    private double targetBodyWeight;
     private double bmi; // bmi 지수
 
     @Setter
     private double skeletalMuscleMass; // 골격근량
     @Setter
-    private double bodyFat = 0; // 체지방량(%)
+    private double bodyFat = 0; // 체지방률(%)
 
-    public PhysicalInformation(double height, double bodyWeight) {
+    public PhysicalInformation(double height, double bodyWeight, double targetBodyWeight) {
         this.height = height;
         this.bodyWeight = bodyWeight;
+        this.targetBodyWeight = targetBodyWeight;
         this.bmi = 1.3 * bodyWeight / Math.pow((height / 100), 2.5);
     }
 
